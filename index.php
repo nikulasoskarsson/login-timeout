@@ -21,26 +21,42 @@ if ($_POST) {
         } else {
             $passwordError = null;
         }
-        if($usernameError || $passwordError){
-            // get the current counter
-            if(isset($_SESSION['counter'])){
-                $counter = $_SESSION['counter'];
-            }
-            else{
-                $counter = 3;
-            }
-            // de-increment the counter by one 
-            if($counter !== 1){
-                $counter--;
-                $_SESSION['counter'] = $counter;
-                echo $counter;
-            }
-            else{
-                $_SESSION['loginBlocked'] = true;
-                $timeout = time() + 300;
-                $minutes = floor(300 / 60);
-                $seconds = 0;
-                $_SESSION['timeout'] = $timeout;
+        if (!$usernameError && !$passwordError) {
+            require('./conn.php');
+            // var_dump($db);
+            try {
+                $q = $db->prepare('SELECT * FROM users ');
+                $q->execute();
+                $row = $q->fetch();
+                // var_dump($row->username);
+
+                if ($_POST['username'] == $row->username && $_POST['password'] == $row->password) {
+                    echo 'Login..';
+                } else {
+                    // echo 'Fail..';
+                    // get the current counter
+                    if (isset($_SESSION['counter'])) {
+                        $counter = $_SESSION['counter'];
+                    } else {
+                        $counter = 3;
+                    }
+                    // de-increment the counter by one
+                    if ($counter !== 1) {
+                        $counter--;
+                        $_SESSION['counter'] = $counter;
+                        echo 'Tries left: '.$counter;
+                    } else {
+                        $_SESSION['loginBlocked'] = true;
+                        $timeout = time() + 300;
+                        $_SESSION['timeout'] = $timeout;
+                        $minutes = floor(300 / 60);
+                        $seconds = $minutes / 1000;
+                    }
+                }
+
+                http_response_code(401);
+            } catch (Exception $ex) {
+                echo $ex;
             }
         }
         // No errors
