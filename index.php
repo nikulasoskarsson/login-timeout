@@ -1,36 +1,61 @@
 <?php
 if($_POST){
-
-    if(!isset($_POST['username'])){
-        $usernameError = 'Username needs to be set';
+    session_start();
+    if(!isset($_SESSION['loginBlocked'])){
+        if(!isset($_POST['username'])){
+            $usernameError = 'Username needs to be set';
+        }
+        else if(strlen($_POST['username']) < 3){
+            $usernameError = 'Username needs to be at least 3 characters';
+        }
+        else if(strlen($_POST['username']) > 20){
+            $usernameError = 'Username cannot be longer then 20 characters';
+        }
+        else{
+            $usernameError = null;
+        }
+        if(!isset($_POST['password'])){
+            $passwordError = 'password needs to be set';
+        }
+        else if(strlen($_POST['password']) < 3){
+            $passwordError = 'password needs to be at least 3 characters';
+        }
+        else if(strlen($_POST['password']) > 20){
+            $passwordError = 'password cannot be longer then 20 characters';
+        }
+        else{
+            $passwordError = null;
+        }
+        if($usernameError || $passwordError){
+            // get the current counter
+            if(isset($_SESSION['counter'])){
+                $counter = $_SESSION['counter'];
+            }
+            else{
+                $counter = 3;
+            }
+            // de-increment the counter by one
+            if($counter !== 0){
+                $counter--;
+                $_SESSION['counter'] = $counter;
+                echo $counter;
+            }
+            else{
+                $_SESSION['loginBlocked'] = true;
+            }
+    
+        }
+        // No errors 
+        else{
+            require('./conn.php');
+            var_dump($db);
+        }
     }
-    else if(strlen($_POST['username']) < 3){
-        $usernameError = 'Username needs to be at least 3 characters';
-    }
-    else if(strlen($_POST['username']) > 20){
-        $usernameError = 'Username cannot be longer then 20 characters';
-    }
+    // login blocked
     else{
-        $usernameError = null;
+        
     }
-    if(!isset($_POST['password'])){
-        $passwordError = 'password needs to be set';
-    }
-    else if(strlen($_POST['password']) < 3){
-        $passwordError = 'password needs to be at least 3 characters';
-    }
-    else if(strlen($_POST['password']) > 20){
-        $passwordError = 'password cannot be longer then 20 characters';
-    }
-    else{
-        $passwordError = null;
-    }
-
-    // No errors 
-    if(!$usernameError && !$passwordError){
-        require('./conn.php');
-        var_dump($db);
-    }
+    
 }
 
 
@@ -48,7 +73,7 @@ if($_POST){
 <body>
 
 <div class="container">
-    <form action="" class="login" method="POST">
+    <form action="" class="login" method="POST" <?php if(isset($_SESSION['loginBlocked'])){echo 'onsubmit="return false;"';} ?>>
         <div class="input-group">
             <label for="username" class="label">Username</label>
             <input name="username" type="text" class="input">
