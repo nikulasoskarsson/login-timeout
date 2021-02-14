@@ -1,10 +1,10 @@
 <?php
 
-    session_start();
-    // session_destroy();exit;
-    if (!isset($_SESSION['loginBlocked'])) {
-        // delete the session if the timeout has finished
-        if ($_POST) {
+session_start();
+// session_destroy();exit;
+if (!isset($_SESSION['loginBlocked'])) {
+    // delete the session if the timeout has finished
+    if ($_POST) {
         if (!isset($_POST['username'])) {
             $usernameError = 'Username needs to be set';
         } else if (strlen($_POST['username']) < 3) {
@@ -35,7 +35,7 @@
                 if ($_POST['username'] == $row->username && $_POST['password'] == $row->password) {
                     echo 'Login..';
                 } else {
-                    // echo 'Fail..';
+                    echo 'Failed.. ';
                     // get the current counter
                     if (isset($_SESSION['counter'])) {
                         $counter = $_SESSION['counter'];
@@ -46,7 +46,7 @@
                     if ($counter !== 1) {
                         $counter--;
                         $_SESSION['counter'] = $counter;
-                        echo 'Tries left: '.$counter;
+                        echo 'Tries left: ' . $counter;
                     } else {
                         $_SESSION['loginBlocked'] = true;
                         $timeout = time() + 300;
@@ -63,30 +63,22 @@
         }
         // No errors
         else {
-
         }
     }
-    }
-    // login blocked
-    else{
-        
-        if(isset($_SESSION['timeout'])){
-            if(time() > $_SESSION['timeout'] ){
-                 session_destroy();
-            }
+}
+// login blocked
+else {
 
-            else{
-                $timeout = $_SESSION['timeout'] - time();
-                $minutes = floor($timeout / 60);
-                $seconds = $minutes / 1000;
-            }
-
+    if (isset($_SESSION['timeout'])) {
+        if (time() > $_SESSION['timeout']) {
+            session_destroy();
+        } else {
+            $timeout = $_SESSION['timeout'] - time();
+            $minutes = floor($timeout / 60);
+            $seconds = $minutes / 1000;
         }
     }
-
-
-
-
+}
 ?>
 
 <!DOCTYPE html>
@@ -122,11 +114,35 @@
             <button class="button">Login</button>
 
             <?php if (isset($_SESSION['timeout'])) {
-                echo "<p class='error'>You have been blocked for 5 minutes after 3 failed attempts $minutes minutes and $seconds seconds remaining</p>";
-            } ?><?php ?>
+
+                echo "<p class='error'>You have been blocked for 5 minutes after 3 failed attempts. $minutes minutes and $seconds seconds remaining</p>";
+            } ?>
+            <p id=demo></p>
         </form>
     </div>
 
+
+    <script>
+        var secsLeft = "<?php print($timeout); ?>";
+        console.log("MIN: ", secsLeft);
+        var d = new Date().getTime() / 1000;
+        var s = Math.floor(secsLeft - d);
+
+        setInterval(function() {
+            console.log(s);
+
+            var minutes = s / 60;
+
+            document.getElementById("demo").innerHTML = "Javascrup: " + minutes + "m ";
+            s--;
+
+            // if (minsLeft < 0) {
+            //     clearInterval();
+            //     document.getElementById("demo").innerHTML = "EXPIRED";
+            // }
+            console.log("min");
+        }, 1000);
+    </script>
 </body>
 
 </html>
