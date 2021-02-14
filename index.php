@@ -1,10 +1,14 @@
 <?php
+    session_start();
+    // session_destroy();exit;
+    if(isset($_SESSION['loggedIn'])){
+        echo 'working';
+        header('Location: admin.php');
+    }
 
-session_start();
-// session_destroy();exit;
-if (!isset($_SESSION['loginBlocked'])) {
-    // delete the session if the timeout has finished
-    if ($_POST) {
+    if (!isset($_SESSION['loginBlocked'])) {
+        // delete the session if the timeout has finished
+        if ($_POST) {
         if (!isset($_POST['username'])) {
             $usernameError = 'Username needs to be set';
         } else if (strlen($_POST['username']) < 3) {
@@ -33,7 +37,9 @@ if (!isset($_SESSION['loginBlocked'])) {
                 // var_dump($row->username);
 
                 if ($_POST['username'] == $row->username && $_POST['password'] == $row->password) {
-                    echo 'Login..';
+                    $_SESSION['loggedIn'] = true;
+                    header('Location: admin.php');
+                    die();
                 } else {
                     echo 'Failed.. ';
                     // get the current counter
@@ -88,15 +94,18 @@ else {
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="app.css">
     <title>Login</title>
 </head>
 
 <body>
 
     <div class="container">
+  
         <form action="" class="login" method="POST" <?php if (isset($_SESSION['loginBlocked'])) {
                                                         echo 'onsubmit="return false;"';
                                                     } ?>>
+            <h3 class="heading">Login</h3>
             <div class="input-group">
                 <label for="username" class="label">Username</label>
                 <input name="username" type="text" class="input">
@@ -136,10 +145,10 @@ else {
             document.getElementById("demo").innerHTML = "Javascrup: " + minutes + "m ";
             s--;
 
-            // if (minsLeft < 0) {
-            //     clearInterval();
-            //     document.getElementById("demo").innerHTML = "EXPIRED";
-            // }
+            if (minutes < 0) {
+                clearInterval();
+                document.getElementById("demo").innerHTML = "";
+            }
             console.log("min");
         }, 1000);
     </script>
