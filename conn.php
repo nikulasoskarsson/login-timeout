@@ -12,6 +12,7 @@ try{
   );
   $db = new PDO( $sDatabaseConnection, $sDatabaseUserName, $sDatabasePassword, $aDatabaseOptions );
 }catch( PDOException $e){
+  var_dump($e);
   http_response_code(500);
   exit();
 }

@@ -23,7 +23,13 @@ if($_POST){
         $passwordError = 'password cannot be longer then 20 characters';
     }
     else{
-        $usernameError = null;
+        $passwordError = null;
+    }
+
+    // No errors 
+    if(!$usernameError && !$passwordError){
+        require('./conn.php');
+        var_dump($db);
     }
 }
 
