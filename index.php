@@ -1,8 +1,10 @@
 <?php
-if ($_POST) {
+
     session_start();
     // session_destroy();exit;
     if (!isset($_SESSION['loginBlocked'])) {
+        // delete the session if the timeout has finished
+        if ($_POST) {
         if (!isset($_POST['username'])) {
             $usernameError = 'Username needs to be set';
         } else if (strlen($_POST['username']) < 3) {
@@ -64,15 +66,24 @@ if ($_POST) {
 
         }
     }
+    }
     // login blocked
     else{
-        if($_SESSION['timeout']){
-            $timeout = $_SESSION['timeout'] - time();
-            $minutes = floor($timeout / 60);
-            $seconds = $minutes / 1000;
+        
+        if(isset($_SESSION['timeout'])){
+            if(time() > $_SESSION['timeout'] ){
+                 session_destroy();
+            }
+
+            else{
+                $timeout = $_SESSION['timeout'] - time();
+                $minutes = floor($timeout / 60);
+                $seconds = $minutes / 1000;
+            }
+
         }
     }
-}
+
 
 
 
@@ -110,7 +121,7 @@ if ($_POST) {
             </div>
             <button class="button">Login</button>
 
-            <?php if (isset($_SESSION['loginBlocked'])) {
+            <?php if (isset($_SESSION['timeout'])) {
                 echo "<p class='error'>You have been blocked for 5 minutes after 3 failed attempts $minutes minutes and $seconds seconds remaining</p>";
             } ?><?php ?>
         </form>
