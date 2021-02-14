@@ -1,7 +1,11 @@
 <?php
-
     session_start();
     // session_destroy();exit;
+    if(isset($_SESSION['loggedIn'])){
+        echo 'working';
+        header('Location: admin.php');
+    }
+
     if (!isset($_SESSION['loginBlocked'])) {
         // delete the session if the timeout has finished
         if ($_POST) {
@@ -33,7 +37,9 @@
                 // var_dump($row->username);
 
                 if ($_POST['username'] == $row->username && $_POST['password'] == $row->password) {
-                    echo 'Login..';
+                    $_SESSION['loggedIn'] = true;
+                    header('Location: admin.php');
+                    die();
                 } else {
                     // echo 'Fail..';
                     // get the current counter
@@ -96,15 +102,18 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="app.css">
     <title>Login</title>
 </head>
 
 <body>
 
     <div class="container">
+  
         <form action="" class="login" method="POST" <?php if (isset($_SESSION['loginBlocked'])) {
                                                         echo 'onsubmit="return false;"';
                                                     } ?>>
+            <h3 class="heading">Login</h3>
             <div class="input-group">
                 <label for="username" class="label">Username</label>
                 <input name="username" type="text" class="input">
