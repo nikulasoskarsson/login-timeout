@@ -1,6 +1,7 @@
 <?php
 if($_POST){
     session_start();
+    // session_destroy();exit;
     if(!isset($_SESSION['loginBlocked'])){
         if(!isset($_POST['username'])){
             $usernameError = 'Username needs to be set';
@@ -34,14 +35,18 @@ if($_POST){
             else{
                 $counter = 3;
             }
-            // de-increment the counter by one
-            if($counter !== 0){
+            // de-increment the counter by one 
+            if($counter !== 1){
                 $counter--;
                 $_SESSION['counter'] = $counter;
                 echo $counter;
             }
             else{
                 $_SESSION['loginBlocked'] = true;
+                $timeout = microtime() + 300000;
+                $minutes = floor($timeout / 60000);
+                $seconds = $minutes / 1000;
+                $_SESSION['timeout'] = $timeout;
             }
     
         }
@@ -53,7 +58,13 @@ if($_POST){
     }
     // login blocked
     else{
-        
+        if($_SESSION['timeout']){
+            $timeout = $_SESSION['timeout'] - microtime();
+            $_SESSION['timeout'] = $timeout;
+            echo $timeout / 6000;
+            $minutes = floor($timeout / 60000);
+            $seconds = $minutes / 1000;
+        }
     }
     
 }
@@ -85,6 +96,8 @@ if($_POST){
             <?php if(isset($passwordError)) {echo "<p class='error'>$passwordError</p>"; }?>
         </div>
         <button class="button">Login</button>
+
+        <?php if(isset($_SESSION['loginBlocked'])) {echo "<p class='error'>You have been blocked for 5 minutes after 3 failed attempts $minutes minutes and $seconds seconds remaining</p>"; }?><?php ?>
     </form>
 </div>
     
