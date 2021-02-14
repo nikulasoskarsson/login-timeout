@@ -43,9 +43,9 @@ if($_POST){
             }
             else{
                 $_SESSION['loginBlocked'] = true;
-                $timeout = microtime() + 300000;
-                $minutes = floor($timeout / 60000);
-                $seconds = $minutes / 1000;
+                $timeout = time() + 300;
+                $minutes = floor(300 / 60);
+                $seconds = 0;
                 $_SESSION['timeout'] = $timeout;
             }
     
@@ -59,10 +59,9 @@ if($_POST){
     // login blocked
     else{
         if($_SESSION['timeout']){
-            $timeout = $_SESSION['timeout'] - microtime();
-            $_SESSION['timeout'] = $timeout;
-            echo $timeout / 6000;
-            $minutes = floor($timeout / 60000);
+            $timeout = $_SESSION['timeout'] - time();
+            $minutes = floor($timeout / 60);
+
             $seconds = $minutes / 1000;
         }
     }
