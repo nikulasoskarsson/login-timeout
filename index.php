@@ -1,7 +1,33 @@
 <?php
 if($_POST){
-    var_dump($_POST);
+
+    if(!isset($_POST['username'])){
+        $usernameError = 'Username needs to be set';
+    }
+    else if(strlen($_POST['username']) < 3){
+        $usernameError = 'Username needs to be at least 3 characters';
+    }
+    else if(strlen($_POST['username']) > 20){
+        $usernameError = 'Username cannot be longer then 20 characters';
+    }
+    else{
+        $usernameError = null;
+    }
+    if(!isset($_POST['password'])){
+        $passwordError = 'password needs to be set';
+    }
+    else if(strlen($_POST['password']) < 3){
+        $passwordError = 'password needs to be at least 3 characters';
+    }
+    else if(strlen($_POST['password']) > 20){
+        $passwordError = 'password cannot be longer then 20 characters';
+    }
+    else{
+        $usernameError = null;
+    }
 }
+
+
 
 ?>
 
@@ -20,10 +46,12 @@ if($_POST){
         <div class="input-group">
             <label for="username" class="label">Username</label>
             <input name="username" type="text" class="input">
+            <?php if(isset($usernameError)) {echo "<p class='error'>$usernameError</p>"; }?>
         </div>
         <div class="input-group">
             <label for="password" class="label">password</label>
             <input name="password" type="password" class="input">
+            <?php if(isset($passwordError)) {echo "<p class='error'>$passwordError</p>"; }?>
         </div>
         <button class="button">Login</button>
     </form>
