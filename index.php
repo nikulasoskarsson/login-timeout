@@ -79,8 +79,9 @@ else {
         if (time() > $_SESSION['timeout']) {
             session_destroy();
         } else {
-            $timeout = $_SESSION['timeout'] - time();
-            $minutes = floor($timeout / 60);
+            $timeout = $_SESSION['timeout'];
+            $diff = $timeout- time();
+            $minutes = floor($diff / 60);
             $seconds = $minutes / 1000;
         }
     }
